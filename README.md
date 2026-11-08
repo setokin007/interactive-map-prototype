@@ -44,8 +44,8 @@ not plain HTML: each page loads `./support.js`, the canvas runtime that renders 
 `<x-dc>` template, the `{{…}}` bindings and the `<sc-if>` / `<sc-for>` blocks. That runtime
 is not included here, so opening a file directly in a browser will not render the page.
 
-Images are referenced as `/_blob/<id>`, which only resolves inside the canvas. See
-[`assets/README.md`](assets/README.md) for the list of images to export.
+The images are in [`assets/`](assets/README.md). In this repository the pages reference
+them as `../assets/<file>`; on the design canvas the same images are stored as `/_blob/<id>`.
 
 ## Path to Vercel
 
@@ -54,8 +54,8 @@ To host this as a static site:
 1. **Export each page as standalone HTML** from the design canvas (artboard menu → download),
    which bundles the runtime and images, and add the exports under `site/`
    (for example `site/index.html` for Plan my day and `site/tickets.html`).
-2. **Bring the images across** into `assets/` if the export doesn't inline them, and
-   replace `/_blob/<id>` references with `assets/<file>` paths.
+2. **Use the images in `assets/`** if the export doesn't inline them, replacing any
+   `/_blob/<id>` references in the export with `assets/<file>` paths.
 3. **Point Vercel at `site/`** as a static project (no build step). Optional:
    add a `vercel.json` with clean URLs.
 4. For production, rebuild the pages as components in the polynesia.com stack
