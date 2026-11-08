@@ -1,7 +1,7 @@
 # Images
 
 The 13 images used by the prototype, exported from the design canvas at the size the
-prototype shows them. The page files in `design/` reference them as `../assets/<file>`.
+prototype shows them. The page files in `design/` reference them as `../assets/<file>`. The deployable copies in `site/assets/` keep the canvas ids as file names, which is how the exported pages reference them.
 
 | What it shows | File | Canvas id |
 | --- | --- | --- |

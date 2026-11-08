@@ -12,10 +12,19 @@ are handed off to the right ticket package.
 
 Two linked pages that share one itinerary:
 
-| File | Page | Purpose |
-| --- | --- | --- |
-| `design/your-day-and-tickets.dc.html` | 1 · Your day & tickets | Understand the day at the Center, then choose a package |
-| `design/plan-my-day.dc.html` | 2 · Plan my day | Map + things to do + the "Your day" timeline; send the day to the app |
+| Page | Purpose | Live site | Design source |
+| --- | --- | --- | --- |
+| 1 · Your day & tickets | Understand the day at the Center, then choose a package | `site/Discover.dc.html` (`/tickets`) | `design/your-day-and-tickets.dc.html` |
+| 2 · Plan my day | Map, things to do and the "Your day" timeline; send the day to the app | `site/Main.dc.html` (`/` and `/plan`) | `design/plan-my-day.dc.html` |
+
+| Folder | What it is |
+| --- | --- |
+| `site/` | **The deployable site.** Standalone exports of both pages with their runtime (`support.js`, `vendor/react*.js`) and images. This is what Vercel serves. |
+| `design/` | The design-canvas source of both pages, the canvas layout and the PCC Legacy tokens. Edit the prototype on the canvas, then re-export into `site/`. |
+| `assets/` | The same 13 images with readable names, for reuse elsewhere. |
+
+A day built on **Plan my day** is saved in the browser and picked up by **Your day & tickets**
+("You started a day in the planner with 8 stops…").
 
 Key features of **Plan my day**:
 
@@ -37,30 +46,40 @@ Key features of **Plan my day**:
 `design/canvas.json` lays the two pages out on the design canvas. `design/ds/pcc-legacy/tokens.json`
 holds the PCC Legacy design tokens the pages were started from.
 
-## How these files run today
+## Run it locally
 
-The `.dc.html` files are **Design Component** pages from a Claude Design canvas. They are
-not plain HTML: each page loads `./support.js`, the canvas runtime that renders the
-`<x-dc>` template, the `{{…}}` bindings and the `<sc-if>` / `<sc-for>` blocks. That runtime
-is not included here, so opening a file directly in a browser will not render the page.
+The pages load their scripts, so serve the folder rather than opening the file:
 
-The images are in [`assets/`](assets/README.md). In this repository the pages reference
-them as `../assets/<file>`; on the design canvas the same images are stored as `/_blob/<id>`.
+```bash
+cd site
+python3 -m http.server 8080
+# then open http://localhost:8080/Main.dc.html
+```
 
-## Path to Vercel
+## Deploy on Vercel
 
-To host this as a static site:
+The repository is ready to deploy as a static site with no build step. `vercel.json`
+serves the `site/` folder, maps `/` and `/plan` to Plan my day and `/tickets` to Your day
+& tickets, and caches the images for a year.
 
-1. **Export each page as standalone HTML** from the design canvas (artboard menu → download),
-   which bundles the runtime and images, and add the exports under `site/`
-   (for example `site/index.html` for Plan my day and `site/tickets.html`).
-2. **Use the images in `assets/`** if the export doesn't inline them, replacing any
-   `/_blob/<id>` references in the export with `assets/<file>` paths.
-3. **Point Vercel at `site/`** as a static project (no build step). Optional:
-   add a `vercel.json` with clean URLs.
-4. For production, rebuild the pages as components in the polynesia.com stack
-   (Brightspot), using the PRD's recommended map approach: illustrated tiles on
-   MapLibre GL JS, with pins, outlines and schedules served from the CMS.
+1. In Vercel, choose **Add New → Project** and import `setokin007/interactive-map-prototype`.
+2. Leave **Framework Preset** as *Other* and the build command empty. The output folder
+   comes from `vercel.json`.
+3. Deploy. Every push to `main` redeploys; pull requests get preview links.
+
+## Updating the site after design changes
+
+1. Make the change on the design canvas.
+2. On each changed page, use the artboard's download menu → **HTML (.zip)**.
+3. Replace the page file (`Main.dc.html` or `Discover.dc.html`) and any new images under
+   `site/` with the export's contents, and copy the canvas source into `design/`.
+4. Commit and push; Vercel redeploys.
+
+## Path to production
+
+This is a reference prototype. For polynesia.com, rebuild the pages as components in the
+site's stack (Brightspot), using the PRD's recommended map approach: illustrated tiles on
+MapLibre GL JS, with pins, outlines and schedules served from the CMS.
 
 ## Before anyone outside the team sees it
 

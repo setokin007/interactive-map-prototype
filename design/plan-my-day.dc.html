@@ -1152,8 +1152,10 @@ class Component extends DCLogic {
     try { window.addEventListener("storage", this.onStorage); } catch (err) {}
   }
   componentWillUnmount() { try { window.removeEventListener("storage", this.onStorage); window.removeEventListener("resize", this.onResize); } catch (err) {} }
-  componentDidUpdate(pp, ps) {
-    var s = this.state;
+  componentDidUpdate(pp, psIn) {
+    // The canvas runtime passes only prevProps, so remember the last state here.
+    var s = this.state, ps = psIn || this._ps || {};
+    this._ps = s;
     if (ps.hotel === s.hotel && ps.plan === s.plan && ps.ticket === s.ticket && ps.date === s.date && ps.adults === s.adults && ps.kids === s.kids && ps.avail === s.avail) return;
     var tk = s.ticket ? TICKETS[s.ticket] : null;
     this._saved = saveRec({ v: 1, source: "planner", date: s.date, adults: s.adults, kids: s.kids, avail: s.avail,
